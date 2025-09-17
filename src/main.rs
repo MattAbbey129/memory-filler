@@ -2,5 +2,11 @@
 // Copyright © 2025 Matt Abbey
 
 fn main() {
-    println!("Hello, world!");
+
+    let mut buffer: Vec<u8> = Vec::new();
+
+    loop {
+        buffer.push(0);
+    }
+
 }
