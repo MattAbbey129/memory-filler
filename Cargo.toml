@@ -8,3 +8,9 @@ license = "MIT"
 anyhow = "^1.0"
 byte-unit = "^5.1"
 crossterm = { version = "^0.29", default-features = false }
+
+[profile.release]
+strip = "symbols"
+lto = "thin"
+panic = "abort"
+codegen-units = 1
