@@ -105,10 +105,10 @@ fn print_buffer_statistics(
             buffer_length_approximate_unit,
             buffer_length,
         )))
-        .with_context(|| "Unable to display buffer information to stdout")?;
+        .with_context(|| "Unable to display buffer statistics to stdout")?;
     stdout
         .flush()
-        .with_context(|| "Unable to execute terminal instructions for displaying buffer information")?;
+        .with_context(|| "Unable to execute terminal instructions for displaying buffer statistics")?;
 
     Ok(())
 }
