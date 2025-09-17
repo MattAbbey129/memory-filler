@@ -18,15 +18,21 @@ fn main() -> Result<()> {
 
     loop {
         /*
+            Avoid needlessly computing 'buffer.len()' multiple
+            times here when we know it will be the same number.
+        */
+        let buffer_length: usize = buffer.len();
+
+        /*
             Allocate more memory in the vector when we've written the
             amount of bytes in CLUSTER_SIZE since the last allocation.
         */
-        if buffer.len() % CLUSTER_SIZE == 0 {
+        if buffer_length % CLUSTER_SIZE == 0 {
             buffer
                 .try_reserve_exact(CLUSTER_SIZE)
                 .with_context(|| format!("Unable to allocate {CLUSTER_SIZE} bytes in memory! Did we ran out of memory?"))?;
 
-            println!("Buffer: {} bytes", buffer.len());
+            println!("Buffer: {} bytes", buffer_length);
         }
 
         buffer.push(0);
