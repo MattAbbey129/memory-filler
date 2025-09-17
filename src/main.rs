@@ -17,7 +17,15 @@ fn main() -> Result<()> {
     };
 
     loop {
+        /*
+            Allocate more memory in the vector when we've written the
+            amount of bytes in CLUSTER_SIZE since the last allocation.
+        */
         if buffer.len() % CLUSTER_SIZE == 0 {
+            buffer
+                .try_reserve_exact(CLUSTER_SIZE)
+                .with_context(|| format!("Unable to allocate {CLUSTER_SIZE} bytes in memory! Did we ran out of memory?"))?;
+
             println!("Buffer: {} bytes", buffer.len());
         }
 
