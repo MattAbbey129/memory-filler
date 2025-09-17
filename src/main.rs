@@ -35,9 +35,9 @@ fn main() -> Result<()> {
         let buffer_length: usize = buffer.len();
 
         /*
-            Allocate more memory to the buffer and print buffer statistics
-            when we have written the amount of bytes in CLUSTER_SIZE since
-            the last allocation or if there is nothing in the buffer yet.
+            Allocate more memory to the buffer when we have written
+            the amount of bytes in CLUSTER_SIZE since the last
+            allocation or if there is nothing in the buffer yet.
         */
         if buffer_length % CLUSTER_SIZE == 0 {
             /*
@@ -50,6 +50,13 @@ fn main() -> Result<()> {
                 .try_reserve_exact(CLUSTER_SIZE)
                 .with_context(|| format!("Unable to allocate {CLUSTER_SIZE} bytes in memory! Did we run out of memory?"))?;
 
+        }
+
+        /*
+            Printing the buffer statistics too often hinders the speed
+            of filling the buffer, so we'll print it less frequently.
+        */
+        if buffer_length % CLUSTER_SIZE*100 == 0 {
             let buffer_length_approximate_unit: AdjustedByte = Byte::from_u64(buffer_length as u64)
                 .get_appropriate_unit(UnitType::Binary);
 
