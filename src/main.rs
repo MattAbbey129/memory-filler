@@ -47,7 +47,7 @@ fn main() -> Result<()> {
             */
             buffer
                 .try_reserve_exact(CLUSTER_SIZE)
-                .with_context(|| format!("Unable to allocate {CLUSTER_SIZE} bytes in memory! Did we ran out of memory?"))?;
+                .with_context(|| format!("Unable to allocate {CLUSTER_SIZE} bytes in memory! Did we run out of memory?"))?;
 
             print_buffer_statistics(&mut stdout, buffer_length)
                 .with_context(|| "Unable to print buffer statistics")?;
