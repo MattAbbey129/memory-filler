@@ -6,3 +6,4 @@ license = "MIT"
 
 [dependencies]
 anyhow = "^1.0"
+crossterm = { version = "^0.29", default-features = false }
