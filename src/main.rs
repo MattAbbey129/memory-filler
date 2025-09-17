@@ -19,6 +19,8 @@ fn main() -> Result<()> {
         ONE_MEGABYTE
     };
 
+    const NULL_BYTE: u8 = 0;
+
     let mut stdout: Stdout = stdout();
 
     stdout
@@ -62,7 +64,7 @@ fn main() -> Result<()> {
                 .with_context(|| "Unable to execute terminal instructions for displaying buffer information")?;
         }
 
-        buffer.push(0);
+        buffer.push(NULL_BYTE);
     }
 
 }
