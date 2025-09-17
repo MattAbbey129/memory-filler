@@ -23,19 +23,8 @@ fn main() -> Result<()> {
 
     let mut stdout: Stdout = stdout();
 
-    /*
-        Initialize terminal cursor position so we
-        know where to print the buffer statistics.
-    */
-    stdout
-        .queue(cursor::MoveToColumn(0))
-        .with_context(|| "Unable to move cursor to first column")?;
-    stdout
-        .queue(cursor::SavePosition)
-        .with_context(|| "Unable to save cursor position")?;
-    stdout
-        .flush()
-        .with_context(|| "Unable to execute terminal instructions for initializing the terminal cursor")?;
+    init_cursor(&mut stdout)
+        .with_context(|| "Unable to initialize terminal cursor")?;
 
     loop {
         /*
@@ -78,4 +67,20 @@ fn main() -> Result<()> {
         buffer.push(NULL_BYTE);
     }
 
+}
+
+/// Initialize terminal cursor position so we
+/// know where to print the buffer statistics.
+fn init_cursor(stdout: &mut Stdout) -> Result<()> {
+    stdout
+        .queue(cursor::MoveToColumn(0))
+        .with_context(|| "Unable to move cursor to first column")?;
+    stdout
+        .queue(cursor::SavePosition)
+        .with_context(|| "Unable to save cursor position")?;
+    stdout
+        .flush()
+        .with_context(|| "Unable to execute terminal instructions for initializing the terminal cursor")?;
+
+    Ok(())
 }
