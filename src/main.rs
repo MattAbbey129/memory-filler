@@ -39,13 +39,6 @@ fn main() -> Result<()> {
             the last allocation or if there is nothing in the buffer yet.
         */
         if buffer_length % CLUSTER_SIZE == 0 {
-            stdout
-                .queue(cursor::RestorePosition)
-                .with_context(|| "Unable to restore cursor position")?;
-            stdout
-                .queue(terminal::Clear(terminal::ClearType::FromCursorDown))
-                .with_context(|| "Unable to clear terminal from cursor down")?;
-
             /*
                 We manually allocate an exact additional amount of memory to the buffer
                 instead of letting Rust speculatively allocate additional memory for us.
@@ -56,12 +49,8 @@ fn main() -> Result<()> {
                 .try_reserve_exact(CLUSTER_SIZE)
                 .with_context(|| format!("Unable to allocate {CLUSTER_SIZE} bytes in memory! Did we ran out of memory?"))?;
 
-            stdout
-                .queue(Print(format!("Buffer: {} bytes", buffer_length)))
-                .with_context(|| "Unable to display buffer information to stdout")?;
-            stdout
-                .flush()
-                .with_context(|| "Unable to execute terminal instructions for displaying buffer information")?;
+            print_buffer_statistics(&mut stdout, buffer_length)
+                .with_context(|| "Unable to print buffer statistics")?;
         }
 
         buffer.push(NULL_BYTE);
@@ -81,6 +70,23 @@ fn init_cursor(stdout: &mut Stdout) -> Result<()> {
     stdout
         .flush()
         .with_context(|| "Unable to execute terminal instructions for initializing the terminal cursor")?;
+
+    Ok(())
+}
+
+fn print_buffer_statistics(stdout: &mut Stdout, buffer_length: usize) -> Result<()> {
+    stdout
+        .queue(cursor::RestorePosition)
+        .with_context(|| "Unable to restore cursor position")?;
+    stdout
+        .queue(terminal::Clear(terminal::ClearType::FromCursorDown))
+        .with_context(|| "Unable to clear terminal from cursor down")?;
+    stdout
+        .queue(Print(format!("Buffer: {} bytes", buffer_length)))
+        .with_context(|| "Unable to display buffer information to stdout")?;
+    stdout
+        .flush()
+        .with_context(|| "Unable to execute terminal instructions for displaying buffer information")?;
 
     Ok(())
 }
