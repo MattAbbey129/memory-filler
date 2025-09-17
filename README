@@ -1,0 +1,3 @@
+# Memory Filler
+
+Fills your memory with garbage until you run out of memory. Useful for testing OOM (Out of Memory) mechanisms.
