@@ -4,6 +4,7 @@
 use std::io::{stdout, Stdout, Write};
 
 use anyhow::{Context, Result};
+use byte_unit::{AdjustedByte, Byte, UnitType};
 use crossterm::{cursor, style::Print, terminal, QueueableCommand};
 
 fn main() -> Result<()> {
@@ -49,7 +50,14 @@ fn main() -> Result<()> {
                 .try_reserve_exact(CLUSTER_SIZE)
                 .with_context(|| format!("Unable to allocate {CLUSTER_SIZE} bytes in memory! Did we run out of memory?"))?;
 
-            print_buffer_statistics(&mut stdout, buffer_length)
+            let buffer_length_approximate_unit: AdjustedByte = Byte::from_u64(buffer_length as u64)
+                .get_appropriate_unit(UnitType::Binary);
+
+            print_buffer_statistics(
+                &mut stdout,
+                buffer_length,
+                buffer_length_approximate_unit,
+            )
                 .with_context(|| "Unable to print buffer statistics")?;
         }
 
@@ -74,7 +82,11 @@ fn init_cursor(stdout: &mut Stdout) -> Result<()> {
     Ok(())
 }
 
-fn print_buffer_statistics(stdout: &mut Stdout, buffer_length: usize) -> Result<()> {
+fn print_buffer_statistics(
+    stdout: &mut Stdout,
+    buffer_length: usize,
+    buffer_length_approximate_unit: AdjustedByte,
+) -> Result<()> {
     stdout
         .queue(cursor::RestorePosition)
         .with_context(|| "Unable to restore cursor position")?;
@@ -82,7 +94,10 @@ fn print_buffer_statistics(stdout: &mut Stdout, buffer_length: usize) -> Result<
         .queue(terminal::Clear(terminal::ClearType::FromCursorDown))
         .with_context(|| "Unable to clear terminal from cursor down")?;
     stdout
-        .queue(Print(format!("Buffer: {} bytes", buffer_length)))
+        .queue(Print(format!("Buffer: {:.2} ({} bytes)",
+            buffer_length_approximate_unit,
+            buffer_length,
+        )))
         .with_context(|| "Unable to display buffer information to stdout")?;
     stdout
         .flush()
